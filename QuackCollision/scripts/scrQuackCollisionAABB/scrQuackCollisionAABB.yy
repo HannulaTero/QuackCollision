@@ -1,7 +1,7 @@
 {
   "resourceType": "GMScript",
   "resourceVersion": "1.0",
-  "name": "quack_collision_get",
+  "name": "scrQuackCollisionAABB",
   "isCompatibility": false,
   "isDnD": false,
   "parent": {

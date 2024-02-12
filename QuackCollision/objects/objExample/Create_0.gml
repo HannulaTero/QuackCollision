@@ -3,8 +3,8 @@ repeat(2048)
 {
 	instance_create_depth(random(room_width), random(room_height), 0, objCollider);
 }
-squeak = new SqueakCollision();
-quack = new QuackCollision();
+quackSimple = new QuackCollisionSimple();
+quackAABB = new QuackCollisionAABB();
 repeats = 0;
 
 x = 128;

@@ -1,7 +1,7 @@
 {
   "resourceType": "GMScript",
   "resourceVersion": "1.0",
-  "name": "quack_collision_settings",
+  "name": "scrQuackCollisionSimple",
   "isCompatibility": false,
   "isDnD": false,
   "parent": {

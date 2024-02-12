@@ -1,8 +1,9 @@
+// Varying & uniforms.
 varying vec2 vPosition;
-
 uniform vec2 uniPosition;
 uniform float uniDistance;
 
+// Main function.
 void main() 
 {
 	// Calculate whether positions are close enough.

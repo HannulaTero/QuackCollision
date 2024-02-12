@@ -1,8 +1,8 @@
 
 
-/// @func	QuackCollision();
-/// @desc	Do the collision with drawn quads.
-function QuackCollision() constructor
+/// @func	QuackCollisionAABB();
+/// @desc	Do the collision with drawn quads as Axis-Aligned Bounding Boxes.
+function QuackCollisionAABB() constructor
 {
 //==========================================================
 //
@@ -29,7 +29,7 @@ function QuackCollision() constructor
 	// Camera is needed to avoid GM automatic culling. 
 	static previous = [-1]; 
 	static camera = camera_create_view(-16384, -16384, +32768, +32768);
-	static shader = shdQuackCollision;
+	static shader = shdQuackCollisionAABB;
 	static format = surface_rgba32float;
 	static dtype = buffer_f32;
 	static dsize = buffer_sizeof(dtype);
@@ -44,34 +44,33 @@ function QuackCollision() constructor
 
 	static uniUseCorner = shader_get_uniform(shader, "uniUseCorner");
 	static uniCoordMiddle = shader_get_uniform(shader, "uniCoordMiddle");
-	static texAreas = shader_get_sampler_index(shader, "texAreas");
+	static texA = shader_get_sampler_index(shader, "texA");
 	static uniTexel = shader_get_uniform(shader, "uniTexel");
-	static uniOutputSize = shader_get_uniform(shader, "uniOutputSize");
-	static uniQuadScale = shader_get_uniform(shader, "uniQuadScale");
-	static uniQuadOffset = shader_get_uniform(shader, "uniQuadOffset");
+	static uniSize = shader_get_uniform(shader, "uniSize");
+	static uniScale = shader_get_uniform(shader, "uniScale");
 
 
 #endregion
 // 
 //==========================================================
 //
-#region USER HANDLES: ADD AREA 
+#region USER HANDLES: ADD COLLIDERS 
 
 	
-	// Set collision area.
+	// Add collision area.
 	static AddArea = function(_xmin, _ymin, _xmax, _ymax)
 	{
-		var _buff = self.buffer.areas;
-		var _tell = buffer_tell(_buff);
-		buffer_write(_buff, dtype, _xmin);
-		buffer_write(_buff, dtype, _ymin);
-		buffer_write(_buff, dtype, _xmax);
-		buffer_write(_buff, dtype, _ymax);
-		return _tell;
+		var _areas = self.buffer.areas;
+		var _index = buffer_tell(_areas);
+		buffer_write(_areas, dtype, _xmin);
+		buffer_write(_areas, dtype, _ymin);
+		buffer_write(_areas, dtype, _xmax);
+		buffer_write(_areas, dtype, _ymax);
+		return _index;
 	};
 	
 	
-	// Set collision area with instance.
+	// Add collision area with instance.
 	static AddInstance = function(_inst)
 	{
 		return AddArea(
@@ -129,13 +128,12 @@ function QuackCollision() constructor
 		camera_apply(camera); // To avoid GM automatic culling.
 		UseCorner(); // By default use corner id's.
 		SetScale(); // By default full quads.
-		SetOffset(); // By default no offsets for quad size.
 	
 		// Setup the other uniforms.
 		var _texture = surface_get_texture(self.surface.areas)
-		texture_set_stage(texAreas, _texture);
+		texture_set_stage(texA, _texture);
 		shader_set_uniform_f(uniTexel, 1.0 / _w, 1.0 / _h);
-		shader_set_uniform_f(uniOutputSize, _w, _h);
+		shader_set_uniform_f(uniSize, _w, _h);
 		return self;
 	};
 	
@@ -146,19 +144,11 @@ function QuackCollision() constructor
 //
 #region USER HANDLES: SET PARAMETERS.
 
-
-	// Set quad offset for collider area.
-	static SetOffset = function(_xmin=0, _ymin=0, _xmax=0, _ymax=0)
-	{
-		shader_set_uniform_f(uniQuadOffset, _xmin, _ymin, _xmax, _ymax);
-		return self;
-	};
-	
 	
 	// Set quad offset for collider area.
-	static SetScale = function(_xscale=1, _yscale=1)
+	static SetScale = function(_scale=1)
 	{
-		shader_set_uniform_f(uniQuadScale, _xscale, _yscale, _xscale, _yscale);
+		shader_set_uniform_f(uniScale, _scale);
 		return self;
 	};
 	
@@ -272,7 +262,7 @@ function QuackCollision() constructor
 // 
 //==========================================================
 //
-#region USER HANDLES: FREE AND RESET COMPUTER.
+#region USER HANDLES: FREE OR RESET DATASTRUCTURES.
 
 
 	// Resets buffer sizes.

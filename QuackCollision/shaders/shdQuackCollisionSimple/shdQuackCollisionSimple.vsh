@@ -1,12 +1,14 @@
+// Attributes.
 attribute vec3 in_Position;
 attribute vec4 in_Colour;
 attribute vec2 in_TextureCoord;
 
+// Varying & uniforms.
 varying vec2 vPosition;
-
 uniform int uniUseCorner;
 uniform vec2 uniCoordMiddle;
 
+// Main function.
 void main()
 {
 	// Find out vertex corner information.

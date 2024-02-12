@@ -1,28 +1,52 @@
 
-/// @func	SqueakCollision();
-/// @desc	To find whether point is close enought with centers of drawn sprites.
-function SqueakCollision() constructor
+/// @func	QuackCollisionSimple();
+/// @desc	Do the collision with drawn quads with distance to center points.
+function QuackCollisionSimple() constructor
 {
-	// Initialize instance variables.
+//==========================================================
+//
+#region INSTANCE VARIABLE DECLARATION.
+
+
 	self.surface = -1;		// For getting collisions.
 	self.collisions = 0;	// How many collided with. Max 255.
 	self.counter = 0;		// How many checks done overall. Max 255.
 	
 	
-	// Initialize static variables.
+#endregion
+// 
+//==========================================================
+//
+#region STATIC VARIABLE DECLARATION.
+
+
+	// Previous stores previous shaders to return them back after computation.
 	// Camera is needed to avoid GM automatic culling. 
 	static previous = [-1]; // Previous shaders.
 	static camera = camera_create_view(-16384, -16384, +32768, +32768);
-	static shader = shdSqueakCollision;
+	static shader = shdQuackCollisionSimple;
 	
 	
-	// Initialize static uniforms.
+#endregion
+// 
+//==========================================================
+//
+#region SHADER UNIFORMS.
+
+
 	static uniUseCorner = shader_get_uniform(shader, "uniUseCorner");
 	static uniCoordMiddle = shader_get_uniform(shader, "uniCoordMiddle");
 	static uniPosition = shader_get_uniform(shader, "uniPosition");
 	static uniDistance = shader_get_uniform(shader, "uniDistance");
 	
 	
+#endregion
+// 
+//==========================================================
+//
+#region USER HANDLES: BEGIN COMPUTATION.
+
+
 	// Start checking for collision with given position.
 	static Begin = function(_x, _y, _dist=1)
 	{
@@ -51,6 +75,13 @@ function SqueakCollision() constructor
 	};
 	
 	
+#endregion
+// 
+//==========================================================
+//
+#region USER HANDLES: SET PARAMETERS.
+
+
 	// How far is will count as collision between points.
 	static SetDistance = function(_dist=1)
 	{
@@ -85,6 +116,13 @@ function SqueakCollision() constructor
 	};
 	
 	
+#endregion
+// 
+//==========================================================
+//
+#region USER HANDLES: END COMPUTATION.
+
+
 	// Returns the result of whether any collided.
 	static End = function()
 	{
@@ -106,7 +144,12 @@ function SqueakCollision() constructor
 		self.counter = buffer_peek(_buffer, 3, buffer_u8);
 		buffer_delete(_buffer);
 		return self.collisions;
-	};
+	};	
+
+	
+#endregion
+// 
+//==========================================================
 }
 
 

@@ -1,7 +1,7 @@
 {
   "resourceType": "GMScript",
   "resourceVersion": "1.0",
-  "name": "quack_collision_use_coord",
+  "name": "scrQuackCollisionOBB",
   "isCompatibility": false,
   "isDnD": false,
   "parent": {

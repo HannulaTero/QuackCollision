@@ -1,7 +1,7 @@
 {
   "resourceType": "GMShader",
   "resourceVersion": "1.0",
-  "name": "shdQuackCollision",
+  "name": "shdQuackCollisionAABB",
   "parent": {
     "name": "Quack Collision",
     "path": "folders/Quack Collision.yy",

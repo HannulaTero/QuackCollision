@@ -1,11 +1,10 @@
 {
-  "resourceType": "GMScript",
+  "resourceType": "GMShader",
   "resourceVersion": "1.0",
-  "name": "quack_collision_begin",
-  "isCompatibility": false,
-  "isDnD": false,
+  "name": "shdQuackCollisionSimple",
   "parent": {
     "name": "Quack Collision",
     "path": "folders/Quack Collision.yy",
   },
+  "type": 1,
 }
