@@ -20,6 +20,7 @@ function QuackCollisionAABB() constructor
 	self.mtvX = 0; // Minimal translation vector.
 	self.mtvY = 0; // 
 	
+	
 #endregion
 // 
 //==========================================================

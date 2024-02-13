@@ -13,7 +13,7 @@ y = 256;
 image_xscale = 0.5;
 image_yscale = 0.5;
 index = -1;
-show_debug_overlay(true, true);
+//show_debug_overlay(true, true);
 particlesSmoke = part_system_create(prtSmoke);
 //particlesOther = part_system_create(prtOther);
 //particlesOneBuiltin = part_system_create(prtOneBuiltin);

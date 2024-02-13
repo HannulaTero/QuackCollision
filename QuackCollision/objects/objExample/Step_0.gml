@@ -1,3 +1,6 @@
 /// @desc MOVE PLAYER - MOUSE
-x = mouse_x;
-y = mouse_y;
+if (device_mouse_check_button(0, mb_left))
+{
+	x = mouse_x;
+	y = mouse_y;
+}

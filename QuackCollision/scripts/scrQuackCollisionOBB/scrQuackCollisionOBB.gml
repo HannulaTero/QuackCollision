@@ -290,6 +290,13 @@ function QuackCollisionOBB() constructor
 		return buffer_peek(self.buffer.result, _index, buffer_f32);	
 	};
 	
+	// Get total count of collision checks.
+	static GetTotal = function(_index)
+	{
+		gml_pragma("forceinline");
+		return buffer_peek(self.buffer.result, _index + dsize * 3, buffer_f32);	
+	};
+	
 	// Read minimum translation vector components.
 	static GetMtv = function(_index)
 	{
@@ -299,8 +306,8 @@ function QuackCollisionOBB() constructor
 		var _count = buffer_read(_buff, buffer_f32);
 		if (_count > 0)
 		{
-			self.mtxX = buffer_read(_buff, buffer_f32) / _count;
-			self.mtxY = buffer_read(_buff, buffer_f32) / _count;
+			self.mtvX = buffer_read(_buff, buffer_f32) / _count;
+			self.mtvY = buffer_read(_buff, buffer_f32) / _count;
 		}
 		else 
 		{
