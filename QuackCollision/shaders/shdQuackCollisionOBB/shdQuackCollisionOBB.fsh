@@ -73,30 +73,23 @@ void main()
 		(lhsMinMax[1].y >= rhsMinMax[0].y)
 	);
 	
-	if (collided) 
+	if (!collided) 
 	{
 		gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
 		return;
 	}
 	
 	// Proceed to do the OBB collision. Get the axes.
-	vec2 axes[8];
-	vec2 lhsTemp = lhs[3];
-	vec2 rhsTemp = rhs[3];
-	for(int i = 0; i < 4; i++)
-	{
-		lhsTemp -= lhs[i];
-		rhsTemp -= rhs[i];
-		axes[i+0] = normalize(vec2(-lhsTemp.y, lhsTemp.x));
-		axes[i+4] = normalize(vec2(-rhsTemp.y, rhsTemp.x));
-		lhsTemp = lhs[i];
-		rhsTemp = rhs[i];
-	}
+	vec2 axes[4];
+	axes[0] = normalize(vec2(lhs[1].y - lhs[0].y, lhs[0].x - lhs[1].x));
+	axes[1] = normalize(vec2(lhs[2].y - lhs[0].y, lhs[0].x - lhs[2].x));
+	axes[2] = normalize(vec2(rhs[1].y - rhs[0].y, rhs[0].x - rhs[1].x));
+	axes[3] = normalize(vec2(rhs[2].y - rhs[0].y, rhs[0].x - rhs[2].x));
 	
 	// Test each axis for separation.
 	// Find alo Minimal Translation Vector
 	vec3 mtv = vec3(0.0, 0.0, 65535.0); // vec2 + dist.
-	for(int i = 0; i < 8; i++)
+	for(int i = 0; i < 4; i++)
 	{
 		// Get projections smallest and largest values.
 		vec2 axis = axes[i];

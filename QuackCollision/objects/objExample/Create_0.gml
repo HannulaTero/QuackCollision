@@ -5,6 +5,7 @@ repeat(2048)
 }
 quackSimple = new QuackCollisionSimple();
 quackAABB = new QuackCollisionAABB();
+quackOBB = new QuackCollisionOBB();
 repeats = 0;
 
 x = 128;
@@ -14,11 +15,11 @@ image_yscale = 0.5;
 index = -1;
 show_debug_overlay(true, true);
 particlesSmoke = part_system_create(prtSmoke);
-particlesOther = part_system_create(prtOther);
+//particlesOther = part_system_create(prtOther);
 //particlesOneBuiltin = part_system_create(prtOneBuiltin);
 //particlesOneCustom = part_system_create(prtOneCustom);
 part_system_position(particlesSmoke, room_width/2, room_height*2/3);
-part_system_position(particlesOther, room_width/2, room_height/2);
+//part_system_position(particlesOther, room_width/2, room_height/2);
 //part_system_position(particlesOneBuiltin, x, y);
 //part_system_position(particlesOneCustom, x, y);
 

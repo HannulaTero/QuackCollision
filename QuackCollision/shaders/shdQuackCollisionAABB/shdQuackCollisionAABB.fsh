@@ -51,12 +51,20 @@ void main()
 	rhs[0] = A.xy;
 	rhs[1] = A.zw;
 	
-	// Check for the collision.
+	// Check for the AABB collision.
+	vec2 lhsMinMax[2];
+	lhsMinMax[0] = min(lhs[0], lhs[1]); 
+	lhsMinMax[1] = max(lhs[0], lhs[1]);
+	
+	vec2 rhsMinMax[2];
+	rhsMinMax[0] = min(rhs[0], rhs[1]);
+	rhsMinMax[1] = max(rhs[0], rhs[1]);
+
 	bool collided = (
-		(lhs[0].x <= rhs[1].x) && 
-		(lhs[1].x >= rhs[0].x) && 
-		(lhs[0].y <= rhs[1].y) && 
-		(lhs[1].y >= rhs[0].y)
+		(lhsMinMax[0].x <= rhsMinMax[1].x) && 
+		(lhsMinMax[1].x >= rhsMinMax[0].x) && 
+		(lhsMinMax[0].y <= rhsMinMax[1].y) && 
+		(lhsMinMax[1].y >= rhsMinMax[0].y)
 	);
 	
 	// Store the results.

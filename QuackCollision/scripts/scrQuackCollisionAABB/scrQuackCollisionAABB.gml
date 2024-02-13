@@ -10,13 +10,15 @@ function QuackCollisionAABB() constructor
 
 
 	self.surface = {}; 
-	self.surface.areas = -1;
+	self.surface.A = -1;
 	self.surface.result = -1;
 	
 	self.buffer = {};
-	self.buffer.areas = buffer_create(64, buffer_grow, 1);
+	self.buffer.A = buffer_create(64, buffer_grow, 1);
 	self.buffer.result = buffer_create(64, buffer_grow, 1);
 	
+	self.mtvX = 0; // Minimal translation vector.
+	self.mtvY = 0; // 
 	
 #endregion
 // 
@@ -60,12 +62,13 @@ function QuackCollisionAABB() constructor
 	// Add collision area.
 	static AddArea = function(_xmin, _ymin, _xmax, _ymax)
 	{
-		var _areas = self.buffer.areas;
-		var _index = buffer_tell(_areas);
-		buffer_write(_areas, dtype, _xmin);
-		buffer_write(_areas, dtype, _ymin);
-		buffer_write(_areas, dtype, _xmax);
-		buffer_write(_areas, dtype, _ymax);
+		gml_pragma("forceinline");
+		var _buffA = self.buffer.A;
+		var _index = buffer_tell(_buffA);
+		buffer_write(_buffA, buffer_f32, _xmin);
+		buffer_write(_buffA, buffer_f32, _ymin);
+		buffer_write(_buffA, buffer_f32, _xmax);
+		buffer_write(_buffA, buffer_f32, _ymax);
 		return _index;
 	};
 	
@@ -73,10 +76,17 @@ function QuackCollisionAABB() constructor
 	// Add collision area with instance.
 	static AddInstance = function(_inst)
 	{
-		return AddArea(
-			_inst.bbox_left, _inst.bbox_top, 
-			_inst.bbox_right, _inst.bbox_bottom
-		);	
+		gml_pragma("forceinline");
+		var _buffA = self.buffer.A;
+		var _index = buffer_tell(_buffA);
+		with(_inst)
+		{
+			buffer_write(_buffA, buffer_f32, bbox_left);
+			buffer_write(_buffA, buffer_f32, bbox_top);
+			buffer_write(_buffA, buffer_f32, bbox_right);
+			buffer_write(_buffA, buffer_f32, bbox_bottom);
+		}
+		return _index;
 	};
 
 
@@ -96,23 +106,24 @@ function QuackCollisionAABB() constructor
 		
 		// Preparations.
 		// Might require padding, as derivatives are done in 2x2 blocks.
-		var _tell = buffer_tell(self.buffer.areas);
-		var _count = floor(_tell / (dsize * 4));
+		var _dsize = buffer_sizeof(buffer_f32);
+		var _tell = buffer_tell(self.buffer.A);
+		var _count = floor(_tell / (_dsize * 4));
 		var _w = min(_count + 1, 1024);
 		var _h = (_count div _w) + 1;
 		var _size = _w * _h;
-		var _bytes = _size * dsize * 4;
+		var _bytes = _size * _dsize * 4;
 		
 		// Make buffers large enough, otherwise buffer_get/set_surface might not work.
-		if (buffer_tell(self.buffer.areas) < _bytes)
-			buffer_resize(self.buffer.areas, _bytes);
+		if (buffer_tell(self.buffer.A) < _bytes)
+			buffer_resize(self.buffer.A, _bytes);
 		
 		if (buffer_tell(self.buffer.result) < _bytes)
 			buffer_resize(self.buffer.result, _bytes);
 			
 		// Setup the areas to be a sampler.
-		self.surface.areas = VerifySurface(self.surface.areas, _w, _h);
-		buffer_set_surface(self.buffer.areas, self.surface.areas, 0);
+		self.surface.A = VerifySurface(self.surface.A, _w, _h);
+		buffer_set_surface(self.buffer.A, self.surface.A, 0);
 	
 		// Setup the target surface. Following rendering happen here.
 		self.surface.result = VerifySurface(self.surface.result, _w, _h);
@@ -130,7 +141,7 @@ function QuackCollisionAABB() constructor
 		SetScale(); // By default full quads.
 	
 		// Setup the other uniforms.
-		var _texture = surface_get_texture(self.surface.areas)
+		var _texture = surface_get_texture(self.surface.A)
 		texture_set_stage(texA, _texture);
 		shader_set_uniform_f(uniTexel, 1.0 / _w, 1.0 / _h);
 		shader_set_uniform_f(uniSize, _w, _h);
@@ -145,10 +156,10 @@ function QuackCollisionAABB() constructor
 #region USER HANDLES: SET PARAMETERS.
 
 	
-	// Set quad offset for collider area.
-	static SetScale = function(_scale=1)
+	// Change quad collider area size.
+	static SetScale = function(_xscale=1, _yscale=_xscale)
 	{
-		shader_set_uniform_f(uniScale, _scale);
+		shader_set_uniform_f(uniScale, _xscale, _yscale);
 		return self;
 	};
 	
@@ -205,7 +216,7 @@ function QuackCollisionAABB() constructor
 	
 		// Reset areas, next time have to set up them again.
 		if (_resetAreas == true)
-			buffer_seek(self.buffer.areas, buffer_seek_start, 0);
+			buffer_seek(self.buffer.A, buffer_seek_start, 0);
 	
 		// Return the result.
 		buffer_seek(self.buffer.result, buffer_seek_start, 0);
@@ -223,9 +234,39 @@ function QuackCollisionAABB() constructor
 	// Get collision result from results.
 	static Get = function(_index)
 	{
-		return buffer_peek(self.buffer.result, _index, dtype);	
+		gml_pragma("forceinline");
+		return buffer_peek(self.buffer.result, _index, buffer_f32);	
 	};
 	
+	// Read minimum translation vector components.
+	static GetMtv = function(_index)
+	{
+		gml_pragma("forceinline");
+		var _buff = self.buffer.result;
+		buffer_seek(_buff, buffer_seek_start, _index);
+		var _count = buffer_read(_buff, buffer_f32);
+		if (_count > 0)
+		{
+			self.mtxX = buffer_read(_buff, buffer_f32) / _count;
+			self.mtxY = buffer_read(_buff, buffer_f32) / _count;
+		}
+		else 
+		{
+			self.mtvX = 0.0;
+			self.mtvY = 0.0;
+		}
+		return self;
+	};
+	
+	static MtvX = function()
+	{
+		return self.mtvX;	
+	};
+	
+	static MtvY = function()
+	{
+		return self.mtvY;	
+	};
 
 #endregion
 // 
@@ -268,9 +309,9 @@ function QuackCollisionAABB() constructor
 	// Resets buffer sizes.
 	static ResetBuffer = function()
 	{
-		buffer_resize(self.buffer.areas, 64);
+		buffer_resize(self.buffer.A, 64);
 		buffer_resize(self.buffer.result, 64);
-		buffer_seek(self.buffer.areas, buffer_seek_start, 0);
+		buffer_seek(self.buffer.A, buffer_seek_start, 0);
 		return self;
 	};
 	
@@ -278,14 +319,14 @@ function QuackCollisionAABB() constructor
 	// Free the datastructures.
 	static Free = function()
 	{
-		if (surface_exists(self.surface.areas))
-			surface_free(self.surface.areas);
+		if (surface_exists(self.surface.A))
+			surface_free(self.surface.A);
 			
 		if (surface_exists(self.surface.result))
 			surface_free(self.surface.result);
 		
-		if (buffer_exists(self.buffer.areas))
-			buffer_delete(self.buffer.areas);
+		if (buffer_exists(self.buffer.A))
+			buffer_delete(self.buffer.A);
 		
 		if (buffer_exists(self.buffer.result))
 			buffer_delete(self.buffer.result);

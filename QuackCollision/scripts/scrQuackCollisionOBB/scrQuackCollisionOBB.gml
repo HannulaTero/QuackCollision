@@ -10,14 +10,17 @@ function QuackCollisionOBB() constructor
 
 
 	self.surface = {}; 
-	self.surface.areas = -1;
-	self.surface.angle = -1;
+	self.surface.A = -1;
+	self.surface.B = -1;
 	self.surface.result = -1;
 	
 	self.buffer = {};
-	self.buffer.areas = buffer_create(64, buffer_grow, 1);
-	self.buffer.angle = buffer_create(64, buffer_grow, 1);
+	self.buffer.A = buffer_create(64, buffer_grow, 1);
+	self.buffer.B = buffer_create(64, buffer_grow, 1);
 	self.buffer.result = buffer_create(64, buffer_grow, 1);
+	
+	self.mtvX = 0; // Minimal translation vector.
+	self.mtvY = 0; // 
 	
 	
 #endregion
@@ -61,27 +64,71 @@ function QuackCollisionOBB() constructor
 
 	
 	// Add collision area.
-	static AddArea = function(_x, _y, _w, _h, _rot)
+	static AddArea = function(_x00, _y00, _x10, _y10, _x01, _y01, _x11, _y11)
 	{
-		var _areas = self.buffer.areas;
-		var _index = buffer_tell(_areas);
-		buffer_write(_areas, dtype, _x - _w * 0.5);
-		buffer_write(_areas, dtype, _y - _h * 0.5);
-		buffer_write(_areas, dtype, _x + _w * 0.5);
-		buffer_write(_areas, dtype, _y + _h * 0.5);
+		gml_pragma("forceinline");
+		var _buffA = self.buffer.A;
+		var _buffB = self.buffer.B;
+		var _index = buffer_tell(_buffA);
+		buffer_write(_buffA, buffer_f32, _x00);
+		buffer_write(_buffA, buffer_f32, _y00);
+		buffer_write(_buffA, buffer_f32, _x10);
+		buffer_write(_buffA, buffer_f32, _y10);
+		buffer_write(_buffB, buffer_f32, _x01);
+		buffer_write(_buffB, buffer_f32, _y01);
+		buffer_write(_buffB, buffer_f32, _x11);
+		buffer_write(_buffB, buffer_f32, _y11);
 		return _index;
 	};
 	
 	
-	// Add collision area with instance.
+	// Add collision area with instance
 	static AddInstance = function(_inst)
 	{
-		
-		return AddArea(
-			_inst.bbox_left, _inst.bbox_top, 
-			_inst.bbox_right, _inst.bbox_bottom,
-			_inst.image_angle
-		);	
+		gml_pragma("forceinline");
+		var _buffA = self.buffer.A;
+		var _buffB = self.buffer.B;
+		var _index = buffer_tell(_buffA);
+		with(_inst)
+		{
+			buffer_write(_buffA, buffer_f32, bbox_left);
+			buffer_write(_buffA, buffer_f32, bbox_top);
+			buffer_write(_buffA, buffer_f32, bbox_right);
+			buffer_write(_buffA, buffer_f32, bbox_top);
+			buffer_write(_buffB, buffer_f32, bbox_left);
+			buffer_write(_buffB, buffer_f32, bbox_bottom);
+			buffer_write(_buffB, buffer_f32, bbox_right);
+			buffer_write(_buffB, buffer_f32, bbox_bottom);
+		}
+		return _index;
+	};
+	
+	
+	// Add orientated collision area with instance.
+	static AddInstanceAngled = function(_inst)
+	{
+		gml_pragma("forceinline");
+		var _buffA = self.buffer.A;
+		var _buffB = self.buffer.B;
+		var _index = buffer_tell(_buffA);
+		with(_inst)
+		{
+			var _sin = +dsin(image_angle);
+			var _cos = +dcos(image_angle);
+			var _w0 = bbox_left - x;
+			var _w1 = bbox_right - x;
+			var _h0 = bbox_top - y;
+			var _h1 = bbox_bottom - y;
+			buffer_write(_buffA, buffer_f32, x + _cos * _w0 + _sin * _h0);
+			buffer_write(_buffA, buffer_f32, y - _sin * _w0 + _cos * _h0);
+			buffer_write(_buffA, buffer_f32, x + _cos * _w1 + _sin * _h0);
+			buffer_write(_buffA, buffer_f32, y - _sin * _w1 + _cos * _h0);
+			buffer_write(_buffB, buffer_f32, x + _cos * _w0 + _sin * _h1);
+			buffer_write(_buffB, buffer_f32, y - _sin * _w0 + _cos * _h1);
+			buffer_write(_buffB, buffer_f32, x + _cos * _w1 + _sin * _h1);
+			buffer_write(_buffB, buffer_f32, y - _sin * _w1 + _cos * _h1);
+		}
+		return _index;
 	};
 
 
@@ -101,23 +148,29 @@ function QuackCollisionOBB() constructor
 		
 		// Preparations.
 		// Might require padding, as derivatives are done in 2x2 blocks.
-		var _tell = buffer_tell(self.buffer.areas);
-		var _count = floor(_tell / (dsize * 4));
+		var _dsize = buffer_sizeof(buffer_f32);
+		var _tell = buffer_tell(self.buffer.A);
+		var _count = floor(_tell / (_dsize * 4));
 		var _w = min(_count + 1, 1024);
 		var _h = (_count div _w) + 1;
 		var _size = _w * _h;
-		var _bytes = _size * dsize * 4;
+		var _bytes = _size * _dsize * 4;
 		
 		// Make buffers large enough, otherwise buffer_get/set_surface might not work.
-		if (buffer_tell(self.buffer.areas) < _bytes)
-			buffer_resize(self.buffer.areas, _bytes);
+		if (buffer_tell(self.buffer.A) < _bytes)
+			buffer_resize(self.buffer.A, _bytes);
+
+		if (buffer_tell(self.buffer.B) < _bytes)
+			buffer_resize(self.buffer.B, _bytes);
 		
 		if (buffer_tell(self.buffer.result) < _bytes)
 			buffer_resize(self.buffer.result, _bytes);
 			
-		// Setup the areas to be a sampler.
-		self.surface.areas = VerifySurface(self.surface.areas, _w, _h);
-		buffer_set_surface(self.buffer.areas, self.surface.areas, 0);
+		// Setup the corner positions to be a samplers.
+		self.surface.A = VerifySurface(self.surface.A, _w, _h);
+		self.surface.B = VerifySurface(self.surface.B, _w, _h);
+		buffer_set_surface(self.buffer.A, self.surface.A, 0);
+		buffer_set_surface(self.buffer.B, self.surface.B, 0);
 	
 		// Setup the target surface. Following rendering happen here.
 		self.surface.result = VerifySurface(self.surface.result, _w, _h);
@@ -135,8 +188,10 @@ function QuackCollisionOBB() constructor
 		SetScale(); // By default full quads.
 	
 		// Setup the other uniforms.
-		var _texture = surface_get_texture(self.surface.areas)
-		texture_set_stage(texA, _texture);
+		var _texA = surface_get_texture(self.surface.A)
+		var _texB = surface_get_texture(self.surface.B)
+		texture_set_stage(texA, _texA);
+		texture_set_stage(texB, _texB);
 		shader_set_uniform_f(uniTexel, 1.0 / _w, 1.0 / _h);
 		shader_set_uniform_f(uniSize, _w, _h);
 		return self;
@@ -150,7 +205,7 @@ function QuackCollisionOBB() constructor
 #region USER HANDLES: SET PARAMETERS.
 
 	
-	// Set quad offset for collider area.
+	// Change quad collider area size.
 	static SetScale = function(_scale=1)
 	{
 		shader_set_uniform_f(uniScale, _scale);
@@ -192,7 +247,7 @@ function QuackCollisionOBB() constructor
 
 
 	// Ends the calculations and return s previous GPU settings.
-	static End = function(_resetAreas=true)
+	static End = function(_resetCorners=true)
 	{
 		// Return previous settings.
 		var _previous = array_pop(previous);
@@ -208,9 +263,12 @@ function QuackCollisionOBB() constructor
 		buffer_get_surface(self.buffer.result, self.surface.result, 0);
 		buffer_seek(self.buffer.result, buffer_seek_start, 0);
 	
-		// Reset areas, next time have to set up them again.
-		if (_resetAreas == true)
-			buffer_seek(self.buffer.areas, buffer_seek_start, 0);
+		// Reset quad corner positions, next time have to set up them again.
+		if (_resetCorners == true)
+		{
+			buffer_seek(self.buffer.A, buffer_seek_start, 0);
+			buffer_seek(self.buffer.B, buffer_seek_start, 0);
+		}
 	
 		// Return the result.
 		buffer_seek(self.buffer.result, buffer_seek_start, 0);
@@ -228,9 +286,40 @@ function QuackCollisionOBB() constructor
 	// Get collision result from results.
 	static Get = function(_index)
 	{
-		return buffer_peek(self.buffer.result, _index, dtype);	
+		gml_pragma("forceinline");
+		return buffer_peek(self.buffer.result, _index, buffer_f32);	
 	};
 	
+	// Read minimum translation vector components.
+	static GetMtv = function(_index)
+	{
+		gml_pragma("forceinline");
+		var _buff = self.buffer.result;
+		buffer_seek(_buff, buffer_seek_start, _index);
+		var _count = buffer_read(_buff, buffer_f32);
+		if (_count > 0)
+		{
+			self.mtxX = buffer_read(_buff, buffer_f32) / _count;
+			self.mtxY = buffer_read(_buff, buffer_f32) / _count;
+		}
+		else 
+		{
+			self.mtvX = 0.0;
+			self.mtvY = 0.0;
+		}
+		return self;
+	};
+	
+	static MtvX = function()
+	{
+		return self.mtvX;	
+	};
+	
+	static MtvY = function()
+	{
+		return self.mtvY;	
+	};
+
 
 #endregion
 // 
@@ -273,9 +362,11 @@ function QuackCollisionOBB() constructor
 	// Resets buffer sizes.
 	static ResetBuffer = function()
 	{
-		buffer_resize(self.buffer.areas, 64);
+		buffer_resize(self.buffer.A, 64);
+		buffer_resize(self.buffer.B, 64);
 		buffer_resize(self.buffer.result, 64);
-		buffer_seek(self.buffer.areas, buffer_seek_start, 0);
+		buffer_seek(self.buffer.A, buffer_seek_start, 0);
+		buffer_seek(self.buffer.B, buffer_seek_start, 0);
 		return self;
 	};
 	
@@ -283,14 +374,20 @@ function QuackCollisionOBB() constructor
 	// Free the datastructures.
 	static Free = function()
 	{
-		if (surface_exists(self.surface.areas))
-			surface_free(self.surface.areas);
+		if (surface_exists(self.surface.A))
+			surface_free(self.surface.A);
+			
+		if (surface_exists(self.surface.B))
+			surface_free(self.surface.B);
 			
 		if (surface_exists(self.surface.result))
 			surface_free(self.surface.result);
 		
-		if (buffer_exists(self.buffer.areas))
-			buffer_delete(self.buffer.areas);
+		if (buffer_exists(self.buffer.A))
+			buffer_delete(self.buffer.A);
+			
+		if (buffer_exists(self.buffer.B))
+			buffer_delete(self.buffer.B);
 		
 		if (buffer_exists(self.buffer.result))
 			buffer_delete(self.buffer.result);
