@@ -9,8 +9,14 @@ function QuackCollisionSimple() constructor
 
 
 	self.surface = -1;		// For getting collisions.
-	self.collisions = 0;	// How many collided with. Max 255.
-	self.counter = 0;		// How many checks done overall. Max 255.
+	self.collisions = 0;	// How many collided with.			Range 0 to 255.
+	self.total = 0;			// How many checks done overall.	Range 0 to 255.
+	
+	self.radius = 0;		// Particles' radius.
+	self.collider = {};		// Which to check against.
+	self.collider.x = 0;
+	self.collider.y = 0;
+	self.collider.radius = 0;
 	
 	
 #endregion
@@ -44,12 +50,43 @@ function QuackCollisionSimple() constructor
 // 
 //==========================================================
 //
+#region USER HANDLES: ADD COLLIDER AREA
+
+
+	// Set up circle collision area.
+	static AddArea = function(_x, _y, _radius=1)
+	{
+		self.collider.x = _x;
+		self.collider.y = _y;
+		self.collider.radius = _radius;
+		return self;
+	};
+	
+	// Set up circle collision area with instance.
+	static AddInstance = function(_inst)
+	{
+		with(_inst)
+		{
+			var _x = mean(bbox_left, bbox_right);
+			var _y = mean(bbox_top, bbox_bottom);
+			var _radius = max((bbox_right - _x), (bbox_bottom - _y));
+			other.AddArea(_x, _y, _radius);
+		}
+		return self;
+	};
+
+
+	
+#endregion
+// 
+//==========================================================
+//
 #region USER HANDLES: BEGIN COMPUTATION.
 
 
 	// Start checking for collision with given position.
-	static Begin = function(_x, _y, _dist=1)
-	{
+	static Begin = function()
+	{	
 		// Store previous GPU settings.
 		gpu_push_state();
 		array_push(previous, shader_current());
@@ -69,8 +106,8 @@ function QuackCollisionSimple() constructor
 		UseCorner(); // By default use corner id's.
 	
 		// Setup the other uniforms.
-		shader_set_uniform_f(uniPosition, _x, _y);
-		shader_set_uniform_f(uniDistance, _dist);
+		shader_set_uniform_f(uniPosition, self.collider.x, self.collider.y);
+		shader_set_uniform_f(uniDistance, self.radius + self.collider.radius);
 		return self;
 	};
 	
@@ -83,9 +120,10 @@ function QuackCollisionSimple() constructor
 
 
 	// How far is will count as collision between points.
-	static SetDistance = function(_dist=1)
+	static SetRadius = function(_radius=1)
 	{
-		shader_set_uniform_f(uniDistance, _dist);
+		self.radius = _radius;
+		shader_set_uniform_f(uniDistance, self.radius + self.collider.radius);
 		return self;
 	};
 	
@@ -120,6 +158,46 @@ function QuackCollisionSimple() constructor
 // 
 //==========================================================
 //
+#region USER HANDLES: GET RESULTS.
+
+
+	// Get the count how many has collided.
+	static GetCollisions = function()
+	{
+		gml_pragma("forceinline");
+		return self.collisions;
+	};
+	
+	
+	// Minimal translation vector. 
+	// This can't store in rgba8unorm, so not implemented.
+	// Methods exist to have same methods with other versions.
+	static GetX = function()
+	{
+		gml_pragma("forceinline");
+		return 0;
+	};
+	
+	
+	static GetY = function()
+	{
+		gml_pragma("forceinline");
+		return 0;
+	};
+	
+	
+	// Get total count of collision checks.
+	static GetTotal = function()
+	{
+		gml_pragma("forceinline");
+		return self.total;
+	}
+	
+	
+#endregion
+// 
+//==========================================================
+//
 #region USER HANDLES: END COMPUTATION.
 
 
@@ -141,12 +219,44 @@ function QuackCollisionSimple() constructor
 		buffer_get_surface(_buffer, self.surface, 0);
 		surface_free(self.surface);
 		self.collisions = buffer_peek(_buffer, 0, buffer_u8);
-		self.counter = buffer_peek(_buffer, 3, buffer_u8);
+		self.total = buffer_peek(_buffer, 3, buffer_u8);
 		buffer_delete(_buffer);
 		return self.collisions;
 	};	
-
 	
+	
+#endregion
+// 
+//==========================================================
+//
+#region USER HANDLES: DEBUG DRAW.
+
+
+	// Render collision area.
+	static DebugDraw = function()
+	{
+		var _c = (self.collisions) ? c_red : c_white;
+		draw_circle_color(self.collider.x, self.collider.y, self.collider.radius, _c, _c, true);
+		return self;
+	}
+	
+
+#endregion
+// 
+//==========================================================
+//
+#region USER HANDLES: FREE
+
+
+	static Free = function()
+	{
+		// No action. 
+		// This is here to have similar handles to other versions.
+		// If simple is used correctly, then no datastructures are left.
+		return self;
+	};
+
+
 #endregion
 // 
 //==========================================================

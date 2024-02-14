@@ -17,9 +17,6 @@ function QuackCollisionAABB() constructor
 	self.buffer.A = buffer_create(64, buffer_grow, 1);
 	self.buffer.result = buffer_create(64, buffer_grow, 1);
 	
-	self.mtvX = 0; // Minimal translation vector.
-	self.mtvY = 0; // 
-	
 	
 #endregion
 // 
@@ -232,42 +229,37 @@ function QuackCollisionAABB() constructor
 #region USER HANDLES: GET RESULTS
 
 
-	// Get collision result from results.
-	static Get = function(_index)
+	// Get the count how many has collided.
+	static GetCollisions = function(_index)
 	{
 		gml_pragma("forceinline");
 		return buffer_peek(self.buffer.result, _index, buffer_f32);	
 	};
 	
+	
 	// Read minimum translation vector components.
-	static GetMtv = function(_index)
+	static GetX = function(_index)
 	{
 		gml_pragma("forceinline");
-		var _buff = self.buffer.result;
-		buffer_seek(_buff, buffer_seek_start, _index);
-		var _count = buffer_read(_buff, buffer_f32);
-		if (_count > 0)
-		{
-			self.mtxX = buffer_read(_buff, buffer_f32) / _count;
-			self.mtxY = buffer_read(_buff, buffer_f32) / _count;
-		}
-		else 
-		{
-			self.mtvX = 0.0;
-			self.mtvY = 0.0;
-		}
-		return self;
+		return buffer_peek(self.buffer.result, _index + dsize * 1, buffer_f32);
 	};
 	
-	static MtvX = function()
+	
+	static GetY = function(_index)
 	{
-		return self.mtvX;	
+		gml_pragma("forceinline");
+		return buffer_peek(self.buffer.result, _index + dsize * 2, buffer_f32);
 	};
 	
-	static MtvY = function()
+	
+	// Get total count of collision checks.
+	static GetTotal = function(_index)
 	{
-		return self.mtvY;	
+		gml_pragma("forceinline");
+		return buffer_peek(self.buffer.result, _index + dsize * 3, buffer_f32);
 	};
+	
+	
 
 #endregion
 // 
@@ -297,6 +289,45 @@ function QuackCollisionAABB() constructor
 		}
 		
 		return _surface;
+	};
+
+
+#endregion
+// 
+//==========================================================
+//
+#region USER HANDLES: DEBUG DRAW.
+
+
+	// Render collision areas.
+	static DebugDraw = function()
+	{
+		// Store seek position and cache buffer indexes.
+		var _buffA = self.buffer.A;
+		var _sizeA = buffer_get_size(_buffA);
+		var _tellA = buffer_tell(_buffA);
+		var _buffResult = self.buffer.result;
+		var _sizeResult = buffer_get_size(_buffResult);
+		var _tellResult = buffer_tell(_buffResult);
+		var _jumpResult = 3 * buffer_sizeof(buffer_f32);
+		
+		// Draw all collider areas.
+		while(buffer_tell(_buffA) < _sizeA)
+		{
+			var _collisions = buffer_read(_buffResult, buffer_f32);
+			buffer_seek(_buffResult, buffer_seek_relative, _jumpResult);
+			var _x0 = buffer_read(_buffA, buffer_f32);
+			var _y0 = buffer_read(_buffA, buffer_f32);
+			var _x1 = buffer_read(_buffA, buffer_f32);
+			var _y1 = buffer_read(_buffA, buffer_f32);
+			var _c = _collisions ? c_red : c_white;
+			draw_rectangle_color(_x0, _y0, _x1, _y1, _c, _c, _c, _c, true);
+		}
+		
+		// Return previous seek positions.
+		buffer_seek(_buffA, buffer_seek_start, _tellA);
+		buffer_seek(_buffResult, buffer_seek_start, _tellResult);
+		return self;
 	};
 
 
