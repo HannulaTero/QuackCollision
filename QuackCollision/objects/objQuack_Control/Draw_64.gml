@@ -16,6 +16,7 @@ Collisions with drawn quads, such as particle system,
 which normally don't have any way to collide with.
 Examples demonstrate collisions, movement is extra. 
 
+Press ENTER) To hide/unhide debug overlay.
 Press SPACE) To hide/unhide texts.
 Press TAB) Draw colliders.
 Press DEL) Remove all thingies.

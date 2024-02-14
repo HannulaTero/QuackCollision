@@ -19,7 +19,14 @@ if (keyboard_check_released(vk_tab))
 // Info text draw.
 if (keyboard_check_released(vk_space))
 	infoDraw = !infoDraw;
-
+	
+	
+// Debug overlay draw.
+if (keyboard_check_released(vk_enter))
+{
+	overlayDraw = !overlayDraw;
+	show_debug_overlay(overlayDraw, true);
+}
 
 // Create example.
 if (keyboard_check_pressed(vk_anykey))

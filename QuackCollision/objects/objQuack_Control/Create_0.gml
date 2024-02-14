@@ -2,6 +2,7 @@
 
 infoDraw = true;
 debugDraw = false;
+overlayDraw = false;
 
 // Enable text effects.
 font_enable_effects(ftQuack_Example, true, {
