@@ -1,4 +1,7 @@
 /// @desc DRAW INFO
+if (!infoDraw)
+	exit;
+
 var _w = display_get_gui_width();
 var _h = display_get_gui_height();
 
@@ -8,11 +11,20 @@ draw_set_halign(fa_left);
 draw_set_valign(fa_top);
 draw_text(16, 16, @"
 QUACK COLLISION
-Collisions with drawn quads, such as particle system particles.
-    Press 1)   Simple collision.
-    Press 2)   AABB collision.
-    Press 3)   OBB collision.
-    Press DEL) Remove example.
+
+Collisions with drawn quads, such as particle system, 
+which normally don't have any way to collide with.
+Examples demonstrate collisions, movement is extra. 
+
+Press SPACE) To hide/unhide texts.
+Press TAB) Draw colliders.
+Press DEL) Remove all thingies.
+
+Press 1) ParticleSystem Simple.
+Press 2) ParticleSystem AABB.
+Press 3) ParticleSystem OBB.
+Press 4) Miscellenous OBB.
+Press R) Remove example.
 ");
 
 
@@ -20,11 +32,12 @@ Collisions with drawn quads, such as particle system particles.
 draw_set_halign(fa_left);
 draw_set_valign(fa_bottom);
 draw_text(16, _h - 16, @"
-Mouse to Control.
-    Press LEFT)  Move character.
-    Press RIGHT) Rotate character.
-    Press WHEEL) Randomize size.
-   Scroll WHEEL) Change size.
+Mouse Control.
+
+Press LEFT)  Move character.
+Press RIGHT) Rotate character.
+Press WHEEL) Randomize size.
+Scroll WHEEL) Change size.
 ");
 
 
@@ -33,7 +46,7 @@ with(objQuack_Player)
 {
 	draw_set_halign(fa_right);
 	draw_set_valign(fa_top);
-	draw_text(_w - 16, 16, $"\nCollisions  : {collisions}\nChecks Done : {total}");
+	draw_text(_w - 16, 16, $"\nPlayer Instance\nCollisions  : {collisions}\nChecks Done : {total}");
 }
 
 // Draw current example information.

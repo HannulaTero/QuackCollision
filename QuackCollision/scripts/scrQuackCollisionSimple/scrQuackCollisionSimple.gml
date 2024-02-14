@@ -236,7 +236,9 @@ function QuackCollisionSimple() constructor
 	static DebugDraw = function()
 	{
 		var _c = (self.collisions) ? c_red : c_white;
-		draw_circle_color(self.collider.x, self.collider.y, self.collider.radius, _c, _c, true);
+		draw_circle_color(self.collider.x, self.collider.y, self.collider.radius + 1, _c, _c, true);
+		draw_circle_color(self.collider.x, self.collider.y, self.collider.radius - 0, _c, _c, true);
+		draw_circle_color(self.collider.x, self.collider.y, self.collider.radius - 1, _c, _c, true);
 		return self;
 	}
 	

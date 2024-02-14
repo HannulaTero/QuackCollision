@@ -9,12 +9,20 @@
   "instanceCreationOrder": [
     {"name":"inst_7B3463EE","path":"rooms/roomQuack_Example/roomQuack_Example.yy",},
     {"name":"inst_6D653D8D","path":"rooms/roomQuack_Example/roomQuack_Example.yy",},
+    {"name":"inst_F82AB41","path":"rooms/roomQuack_Example/roomQuack_Example.yy",},
+    {"name":"inst_7513A83D","path":"rooms/roomQuack_Example/roomQuack_Example.yy",},
+    {"name":"inst_38BD0259","path":"rooms/roomQuack_Example/roomQuack_Example.yy",},
+    {"name":"inst_1B138E9E","path":"rooms/roomQuack_Example/roomQuack_Example.yy",},
   ],
   "isDnd": false,
   "layers": [
     {"resourceType":"GMRInstanceLayer","resourceVersion":"1.0","name":"Instances","depth":0,"effectEnabled":true,"effectType":null,"gridX":32,"gridY":32,"hierarchyFrozen":false,"inheritLayerDepth":false,"inheritLayerSettings":false,"inheritSubLayers":true,"inheritVisibility":true,"instances":[
         {"resourceType":"GMRInstance","resourceVersion":"1.0","name":"inst_7B3463EE","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"objectId":{"name":"objQuack_Control","path":"objects/objQuack_Control/objQuack_Control.yy",},"properties":[],"rotation":0.0,"scaleX":1.0,"scaleY":1.0,"x":0.0,"y":0.0,},
         {"resourceType":"GMRInstance","resourceVersion":"1.0","name":"inst_6D653D8D","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"objectId":{"name":"objQuack_Player","path":"objects/objQuack_Player/objQuack_Player.yy",},"properties":[],"rotation":0.0,"scaleX":0.5,"scaleY":0.5,"x":672.0,"y":384.0,},
+        {"resourceType":"GMRInstance","resourceVersion":"1.0","name":"inst_F82AB41","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"objectId":{"name":"objQuack_PhysicsRestrict","path":"objects/objQuack_PhysicsRestrict/objQuack_PhysicsRestrict.yy",},"properties":[],"rotation":0.0,"scaleX":1.0,"scaleY":13.0,"x":-32.0,"y":352.0,},
+        {"resourceType":"GMRInstance","resourceVersion":"1.0","name":"inst_7513A83D","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"objectId":{"name":"objQuack_PhysicsRestrict","path":"objects/objQuack_PhysicsRestrict/objQuack_PhysicsRestrict.yy",},"properties":[],"rotation":0.0,"scaleX":23.5,"scaleY":1.0,"x":688.0,"y":800.0,},
+        {"resourceType":"GMRInstance","resourceVersion":"1.0","name":"inst_38BD0259","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"objectId":{"name":"objQuack_PhysicsRestrict","path":"objects/objQuack_PhysicsRestrict/objQuack_PhysicsRestrict.yy",},"properties":[],"rotation":0.0,"scaleX":1.0,"scaleY":13.0,"x":1408.0,"y":352.0,},
+        {"resourceType":"GMRInstance","resourceVersion":"1.0","name":"inst_1B138E9E","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"objectId":{"name":"objQuack_PhysicsRestrict","path":"objects/objQuack_PhysicsRestrict/objQuack_PhysicsRestrict.yy",},"properties":[],"rotation":0.0,"scaleX":21.5,"scaleY":1.0,"x":688.0,"y":-32.0,},
       ],"layers":[],"properties":[],"userdefinedDepth":false,"visible":true,},
     {"resourceType":"GMREffectLayer","resourceVersion":"1.0","name":"fxTwirl","depth":100,"effectEnabled":true,"effectType":"_filter_twirl_distort","gridX":32,"gridY":32,"hierarchyFrozen":false,"inheritLayerDepth":false,"inheritLayerSettings":false,"inheritSubLayers":true,"inheritVisibility":true,"layers":[],"properties":[
         {"name":"g_DistortAngle","type":0,"value":"10",},
@@ -41,10 +49,10 @@
   "parentRoom": null,
   "physicsSettings": {
     "inheritPhysicsSettings": false,
-    "PhysicsWorld": false,
+    "PhysicsWorld": true,
     "PhysicsWorldGravityX": 0.0,
     "PhysicsWorldGravityY": 10.0,
-    "PhysicsWorldPixToMetres": 0.1,
+    "PhysicsWorldPixToMetres": 0.05,
   },
   "roomSettings": {
     "Height": 768,

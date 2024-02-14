@@ -1,8 +1,10 @@
 /// @desc VISUALIZE COLLIDER AREA.
-
-with(parQuack_Example)
+if (debugDraw)
 {
-	quack.DebugDraw();
+	with(parQuack_Example)
+	{
+		quack.DebugDraw();
+	}
 }
 
 

@@ -1,10 +1,7 @@
 /// @desc INITIALIZE
 
-// Collision information.
-collisions = 0;
-moveX = 0;
-moveY = 0;
-total = 0;
+infoDraw = true;
+debugDraw = false;
 
 // Enable text effects.
 font_enable_effects(ftQuack_Example, true, {

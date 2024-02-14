@@ -312,6 +312,7 @@ function QuackCollisionAABB() constructor
 		var _jumpResult = 3 * buffer_sizeof(buffer_f32);
 		
 		// Draw all collider areas.
+		var _w = 2;
 		while(buffer_tell(_buffA) < _sizeA)
 		{
 			var _collisions = buffer_read(_buffResult, buffer_f32);
@@ -321,7 +322,10 @@ function QuackCollisionAABB() constructor
 			var _x1 = buffer_read(_buffA, buffer_f32);
 			var _y1 = buffer_read(_buffA, buffer_f32);
 			var _c = _collisions ? c_red : c_white;
-			draw_rectangle_color(_x0, _y0, _x1, _y1, _c, _c, _c, _c, true);
+			draw_line_width_color(_x0, _y0, _x1, _y0, _w, _c, _c);
+			draw_line_width_color(_x0, _y0, _x0, _y1, _w, _c, _c);
+			draw_line_width_color(_x1, _y1, _x1, _y0, _w, _c, _c);
+			draw_line_width_color(_x1, _y1, _x0, _y1, _w, _c, _c);
 		}
 		
 		// Return previous seek positions.

@@ -3,23 +3,42 @@ var _quack = quack; // To access in with-blocks
 
 
 // Add as many instances you want to check collision against.
-// Access collision information later you need to use the index from method.
 with(objQuack_Player)
 {
-	index = _quack.AddInstanceAngled(self);
+	index = _quack.AddInstanceAngled(self); 
+}
+	
+with(objQuack_Thing)
+{
+	index = _quack.AddInstanceAngled(self); 
 }
 
 
-// Do the collision check.
+// Check for the collisions.
 quack.Begin();
 {
+	// Collide with particle system.
 	part_system_drawit(particles);
+	
+	// To constrain play area.
+	quack.UseCoord(sprQuack_Example_Wall, 0);
+	draw_sprite_stretched(sprQuack_Example_Wall, 0, 0, room_height, room_width, 64);
+	draw_sprite_stretched(sprQuack_Example_Wall, 0, 0, -room_height, 64, room_height * 2);
+	draw_sprite_stretched(sprQuack_Example_Wall, 0, room_width, -room_height, 64, room_height * 2);
 }
 quack.End();
 
 
 // Get the collision results.
 with(objQuack_Player)
+{
+	collisions = _quack.GetCollisions(index);
+	moveX = _quack.GetX(index);
+	moveY = _quack.GetY(index);
+	total = _quack.GetTotal(index);
+}
+
+with(objQuack_Thing)
 {
 	collisions = _quack.GetCollisions(index);
 	moveX = _quack.GetX(index);

@@ -367,6 +367,7 @@ function QuackCollisionOBB() constructor
 		var _jumpResult = 3 * buffer_sizeof(buffer_f32);
 		
 		// Draw all collider areas.
+		var _w = 2;
 		while(buffer_tell(_buffA) < _sizeA)
 		{
 			var _collisions = buffer_read(_buffResult, buffer_f32);
@@ -380,10 +381,10 @@ function QuackCollisionOBB() constructor
 			var _x11 = buffer_read(_buffB, buffer_f32);
 			var _y11 = buffer_read(_buffB, buffer_f32);
 			var _c = _collisions ? c_red : c_white;
-			draw_line_color(_x00, _y00, _x10, _y10, _c, _c);
-			draw_line_color(_x00, _y00, _x01, _y01, _c, _c);
-			draw_line_color(_x11, _y11, _x10, _y10, _c, _c);
-			draw_line_color(_x11, _y11, _x01, _y01, _c, _c);
+			draw_line_width_color(_x00, _y00, _x10, _y10, _w, _c, _c);
+			draw_line_width_color(_x00, _y00, _x01, _y01, _w, _c, _c);
+			draw_line_width_color(_x11, _y11, _x10, _y10, _w, _c, _c);
+			draw_line_width_color(_x11, _y11, _x01, _y01, _w, _c, _c);
 		}
 		
 		// Return previous seek positions.

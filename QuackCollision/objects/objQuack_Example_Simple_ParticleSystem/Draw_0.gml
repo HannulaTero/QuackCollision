@@ -11,6 +11,7 @@ with(objQuack_Player)
 // Do the collision detection.
 quack.Begin();
 {
+	// Collide with particle system.
 	quack.SetRadius(radiusParticle);
 	part_system_drawit(particles);
 }
