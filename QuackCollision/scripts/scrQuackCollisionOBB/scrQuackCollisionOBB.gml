@@ -9,6 +9,8 @@ function QuackCollisionOBB() constructor
 #region INSTANCE VARIABLE DECLARATION.
 
 
+	self.automaticReset = true; // Whether reset target colliders automatically.
+
 	self.surface = {}; 
 	self.surface.A = -1;
 	self.surface.B = -1;
@@ -135,6 +137,61 @@ function QuackCollisionOBB() constructor
 // 
 //==========================================================
 //
+#region USER HANDLES: SET COLLIDERS 
+
+
+	// Set collision area.
+	static SetArea = function(_index, _x00, _y00, _x10, _y10, _x01, _y01, _x11, _y11)
+	{
+		gml_pragma("forceinline");
+		var _buffA = self.buffer.A;
+		var _buffB = self.buffer.B;
+		var _tell = buffer_tell(self.buffer.A);
+		buffer_seek(_buffA, buffer_seek_start, _index);
+		buffer_seek(_buffB, buffer_seek_start, _index);
+		AddArea(_x00, _y00, _x10, _y10, _x01, _y01, _x11, _y11);
+		buffer_seek(_buffA, buffer_seek_start, _tell);
+		buffer_seek(_buffB, buffer_seek_start, _tell);
+		return _index;
+	};
+	
+	
+	// Set collision area with instance
+	static SetInstance = function(_index, _inst)
+	{
+		gml_pragma("forceinline");
+		var _buffA = self.buffer.A;
+		var _buffB = self.buffer.B;
+		var _tell = buffer_tell(self.buffer.A);
+		buffer_seek(_buffA, buffer_seek_start, _index);
+		buffer_seek(_buffB, buffer_seek_start, _index);
+		AddInstance(_inst);
+		buffer_seek(_buffA, buffer_seek_start, _tell);
+		buffer_seek(_buffB, buffer_seek_start, _tell);
+		return _index;
+	};
+	
+	
+	// Set orientated collision area with instance.
+	static SetInstanceAngled = function(_index, _inst)
+	{
+		gml_pragma("forceinline");
+		var _buffA = self.buffer.A;
+		var _buffB = self.buffer.B;
+		var _tell = buffer_tell(self.buffer.A);
+		buffer_seek(_buffA, buffer_seek_start, _index);
+		buffer_seek(_buffB, buffer_seek_start, _index);
+		AddInstanceAngled(_inst);
+		buffer_seek(_buffA, buffer_seek_start, _tell);
+		buffer_seek(_buffB, buffer_seek_start, _tell);
+		return _index;
+	};
+	
+
+#endregion
+// 
+//==========================================================
+//
 #region USER HANDLES: BEGIN COMPUTATION.
 
 	
@@ -203,7 +260,7 @@ function QuackCollisionOBB() constructor
 //
 #region USER HANDLES: SET PARAMETERS.
 
-	
+
 	// Change quad collider area size.
 	static SetScale = function(_scale=1)
 	{
@@ -246,7 +303,7 @@ function QuackCollisionOBB() constructor
 
 
 	// Ends the calculations and return s previous GPU settings.
-	static End = function(_resetCorners=true)
+	static End = function()
 	{
 		// Return previous settings.
 		var _previous = array_pop(previous);
@@ -263,7 +320,7 @@ function QuackCollisionOBB() constructor
 		buffer_seek(self.buffer.result, buffer_seek_start, 0);
 	
 		// Reset quad corner positions, next time have to set up them again.
-		if (_resetCorners == true)
+		if (self.automaticReset == true)
 		{
 			buffer_seek(self.buffer.A, buffer_seek_start, 0);
 			buffer_seek(self.buffer.B, buffer_seek_start, 0);
@@ -400,6 +457,14 @@ function QuackCollisionOBB() constructor
 //==========================================================
 //
 #region USER HANDLES: FREE OR RESET DATASTRUCTURES.
+
+
+	// Automatic discarding of previous target colliders.
+	static AutomaticReset = function(_reset=true)
+	{
+		self.automaticReset = _reset;
+		return true;
+	};
 
 
 	// Resets buffer sizes.

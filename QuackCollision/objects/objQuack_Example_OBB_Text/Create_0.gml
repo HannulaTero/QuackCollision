@@ -17,7 +17,7 @@ repeat(128)
 
 // Draw text.
 keyboard_string = "";
-text = "Type to try!\nHello World!";
+text = "Type to try!\nHello World!\n";
 DrawText = function()
 {
 	var _x = room_width / 2;

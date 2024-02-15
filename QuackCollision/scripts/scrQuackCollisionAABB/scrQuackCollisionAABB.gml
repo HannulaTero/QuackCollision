@@ -9,6 +9,8 @@ function QuackCollisionAABB() constructor
 #region INSTANCE VARIABLE DECLARATION.
 
 
+	self.automaticReset = true; // Whether reset target colliders automatically.
+
 	self.surface = {}; 
 	self.surface.A = -1;
 	self.surface.result = -1;
@@ -87,6 +89,39 @@ function QuackCollisionAABB() constructor
 		return _index;
 	};
 
+
+#endregion
+// 
+//==========================================================
+//
+#region USER HANDLES: ADD COLLIDERS 
+
+	
+	// Set collision area.
+	static SetArea = function(_index, _xmin, _ymin, _xmax, _ymax)
+	{
+		gml_pragma("forceinline");
+		var _buffA = self.buffer.A;
+		var _tell = buffer_tell(self.buffer.A);
+		buffer_seek(_buffA, buffer_seek_start, _index);
+		AddArea(_xmin, _ymin, _xmax, _ymax);
+		buffer_seek(_buffA, buffer_seek_start, _tell);
+		return _index;
+	};
+	
+	
+	// Set collision area with instance.
+	static SetInstance = function(_index, _inst)
+	{
+		gml_pragma("forceinline");
+		var _buffA = self.buffer.A;
+		var _tell = buffer_tell(self.buffer.A);
+		buffer_seek(_buffA, buffer_seek_start, _index);
+		AddInstance(_inst);
+		buffer_seek(_buffA, buffer_seek_start, _tell);
+		return _index;
+	};
+	
 
 #endregion
 // 
@@ -196,7 +231,7 @@ function QuackCollisionAABB() constructor
 
 
 	// Ends the calculations and return s previous GPU settings.
-	static End = function(_resetAreas=true)
+	static End = function()
 	{
 		// Return previous settings.
 		var _previous = array_pop(previous);
@@ -213,7 +248,7 @@ function QuackCollisionAABB() constructor
 		buffer_seek(self.buffer.result, buffer_seek_start, 0);
 	
 		// Reset areas, next time have to set up them again.
-		if (_resetAreas == true)
+		if (self.automaticReset == true)
 			buffer_seek(self.buffer.A, buffer_seek_start, 0);
 	
 		// Return the result.
@@ -342,6 +377,14 @@ function QuackCollisionAABB() constructor
 #region USER HANDLES: FREE OR RESET DATASTRUCTURES.
 
 
+	// Automatic discarding of previous target colliders.
+	static AutomaticReset = function(_reset=true)
+	{
+		self.automaticReset = _reset;
+		return true;
+	};
+	
+	
 	// Resets buffer sizes.
 	static ResetBuffer = function()
 	{
