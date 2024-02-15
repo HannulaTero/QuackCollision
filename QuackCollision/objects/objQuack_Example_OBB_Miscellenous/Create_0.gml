@@ -40,8 +40,17 @@ DrawExt = function(_spr, _img)
 	draw_sprite(sprQuack_Example_Wall, 0, 640, 256);
 	draw_sprite_ext(sprQuack_Example_Wall, 0, 640 + 128, 256, 2, 1, 45, c_white, 1);
 	draw_sprite_stretched(sprQuack_Example_Wall, 0, 640 + 256, 256, 64, 64);
-	shader_enable_corner_id(true);
-	draw_text(current_time/10, 320, "This is a test!");
+};
+
+
+// Drawing a text function
+DrawText = function()
+{
+	draw_set_halign(fa_center);
+	draw_set_valign(fa_middle);
+	var _x = (current_time / 10) mod room_width
+	var _y = room_height / 2;
+	draw_text_transformed(_x, _y, "HELLO WORLD!", 2, 2, current_time / 33);
 };
 
 

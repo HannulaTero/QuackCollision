@@ -17,19 +17,8 @@ with(objQuack_Thing)
 // Check for the collisions.
 quack.Begin();
 {
-	// If can't use vertex corner id, then have to use texture coordinates.
-	quack.UseCoord(sprQuack_Example_Wall, 0);
-	DrawExt(sprQuack_Example_Wall, 0);
-	
-	// Then particle system can for example use corner id.
 	// Collide with particle system.
-	quack.UseCorner();
-	part_system_drawit(particles);
 	DrawText();
-
-	// Physics particles atleast will need texcoord.
-	quack.UseCoord(sprQuack_Example_Particle, 0);
-	physics_particle_draw(physicsFlag, 0, sprQuack_Example_Particle, 0);
 	
 	// To constrain play area.
 	quack.UseCoord(sprQuack_Example_Wall, 0);

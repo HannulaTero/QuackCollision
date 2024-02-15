@@ -1,20 +1,24 @@
 {
   "resourceType": "GMObject",
   "resourceVersion": "1.0",
-  "name": "objQuack_Player",
+  "name": "objQuack_Example_OBB_Text",
   "eventList": [
     {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":0,"eventType":0,"isDnD":false,},
     {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":0,"eventType":8,"isDnD":false,},
+    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":0,"eventType":12,"isDnD":false,},
+    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":73,"eventType":8,"isDnD":false,},
     {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":0,"eventType":3,"isDnD":false,},
-    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":1,"eventType":3,"isDnD":false,},
   ],
   "managed": true,
   "overriddenProperties": [],
   "parent": {
-    "name": "General Objects",
-    "path": "folders/Quack Collision Examples/General Objects.yy",
+    "name": "Example Objects",
+    "path": "folders/Quack Collision Examples/Example Objects.yy",
   },
-  "parentObjectId": null,
+  "parentObjectId": {
+    "name": "parQuack_Example",
+    "path": "objects/parQuack_Example/parQuack_Example.yy",
+  },
   "persistent": false,
   "physicsAngularDamping": 0.1,
   "physicsDensity": 0.5,
@@ -30,10 +34,7 @@
   "physicsStartAwake": true,
   "properties": [],
   "solid": false,
-  "spriteId": {
-    "name": "sprQuack_Example_Player",
-    "path": "sprites/sprQuack_Example_Player/sprQuack_Example_Player.yy",
-  },
+  "spriteId": null,
   "spriteMaskId": null,
   "visible": true,
 }

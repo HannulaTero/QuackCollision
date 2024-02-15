@@ -1,7 +1,7 @@
 {
   "resourceType": "GMFont",
   "resourceVersion": "1.0",
-  "name": "ftQuack_Example",
+  "name": "ftQuack_Example_SDF",
   "AntiAlias": 1,
   "applyKerning": 0,
   "ascender": 17,

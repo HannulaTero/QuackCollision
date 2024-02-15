@@ -5,7 +5,7 @@ debugDraw = false;
 overlayDraw = false;
 
 // Enable text effects.
-font_enable_effects(ftQuack_Example, true, {
+font_enable_effects(ftQuack_Example_SDF, true, {
     outlineEnable: true,
     outlineDistance: 2,
     outlineColour: c_black,

@@ -10,8 +10,8 @@
   "managed": true,
   "overriddenProperties": [],
   "parent": {
-    "name": "Quack Collision Examples",
-    "path": "folders/Quack Collision Examples.yy",
+    "name": "General Objects",
+    "path": "folders/Quack Collision Examples/General Objects.yy",
   },
   "parentObjectId": null,
   "persistent": false,

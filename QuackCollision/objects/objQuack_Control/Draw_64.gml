@@ -6,7 +6,7 @@ var _w = display_get_gui_width();
 var _h = display_get_gui_height();
 
 // Draw example list.
-draw_set_font(ftQuack_Example);
+draw_set_font(ftQuack_Example_SDF);
 draw_set_halign(fa_left);
 draw_set_valign(fa_top);
 draw_text(16, 16, @"
@@ -16,16 +16,17 @@ Collisions with drawn quads, such as particle system,
 which normally don't have any way to collide with.
 Examples demonstrate collisions, movement is extra. 
 
-Press ENTER) To hide/unhide debug overlay.
-Press SPACE) To hide/unhide texts.
-Press TAB) Draw colliders.
-Press DEL) Remove all thingies.
+Press F1) To hide/unhide texts.
+Press F2) Draw colliders.
+Press F3) To hide/unhide debug overlay.
+Press F4) Remove all thingies.
 
 Press 1) ParticleSystem Simple.
 Press 2) ParticleSystem AABB.
 Press 3) ParticleSystem OBB.
-Press 4) Miscellenous OBB.
-Press R) Remove example.
+Press 4) Text OBB.
+Press 5) Miscellenous OBB.
+Press 0) Remove example.
 ");
 
 
